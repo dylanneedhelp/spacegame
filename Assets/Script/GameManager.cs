@@ -60,9 +60,51 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void InstantiateEnemy()
     {
-        Vector3 enemypos = new Vector3(Random.Range(minInstantiateValue, maxInstantiateValue), 6f);
-        GameObject enemy = Instantiate(enemyPrefab, enemypos, Quaternion.Euler(0f, 0f, 180f));
-        Destroy(enemy, destroyTime);
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        float camHeight = mainCamera.orthographicSize * 2f;
+        float camWidth = camHeight * mainCamera.aspect;
+
+        Vector2[] directions = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+        int meteorCount = 2;
+
+        for (int i = 0; i < meteorCount; i++)
+        {
+            Vector2 spawnDir = directions[Random.Range(0, directions.Length)];
+
+            Vector2 spawnPos2D = Vector2.zero;
+            Vector2 camCenter = mainCamera.transform.position;
+
+            float padding = 1.5f;
+
+            if (spawnDir == Vector2.up || spawnDir == Vector2.down)
+            {
+                float xOffset = Random.Range(-camWidth / 2f, camWidth / 2f);
+                float yPos = camCenter.y + (spawnDir.y > 0 ? (camHeight / 2f + padding) : -(camHeight / 2f + padding));
+                spawnPos2D = new Vector2(camCenter.x + xOffset, yPos);
+            }
+            else if (spawnDir == Vector2.left || spawnDir == Vector2.right)
+            {
+                float yOffset = Random.Range(-camHeight / 2f, camHeight / 2f);
+                float xPos = camCenter.x + (spawnDir.x > 0 ? (camWidth / 2f + padding) : -(camWidth / 2f + padding));
+                spawnPos2D = new Vector2(xPos, camCenter.y + yOffset);
+            }
+
+            Vector3 spawnPos = new Vector3(spawnPos2D.x, spawnPos2D.y, 0f);
+
+            GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+
+            Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                Vector2 moveDir = (camCenter - spawnPos2D).normalized;
+                rb.linearVelocity = moveDir * Random.Range(0.5f, 1.2f);
+            }
+
+            Destroy(enemy, destroyTime);
+        }
+
     }
     public void InstantiateStar()
     {
