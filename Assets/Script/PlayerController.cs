@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    public AudioManager audioManager; // Reference to the AudioManager for playing sounds
     // Public variables
     public float speed = 5f; // The speed at which the player moves
     public bool canMoveDiagonally = true; // Controls whether the player can move diagonally
@@ -23,6 +24,15 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         // Prevent the player from rotating
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
+    private void Awake()
+    {
+        // Find the AudioManager in the scene
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager not found! Make sure it is tagged 'Audio'.");
+        }   
     }
 
     void Update()
@@ -90,6 +100,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            audioManager.PlaySFX(audioManager.missileClip);
             SpawnMuzzle();
             SpawnMissle();
         }
@@ -112,6 +123,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy")
         {
+            audioManager.PlaySFX(audioManager.DeadClip);
             Destroy(this.gameObject);
 
             

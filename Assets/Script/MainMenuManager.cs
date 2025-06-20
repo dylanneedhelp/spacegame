@@ -5,12 +5,22 @@ using UnityEngine.SceneManagement;
 public class MainMenuManager : MonoBehaviour
 {
     public TextMeshProUGUI finalScoreText;
+    public AudioManager audioManager;
     void Start()
     {
         DisplayFinalScore();
     }
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+        if (audioManager == null)
+        {
+            Debug.LogError("AudioManager not found! Make sure it is tagged 'Audio'.");
+        }
+    }
     public void PlayGame()
     {
+        audioManager.PlaySFX(audioManager.clickClip);
         Debug.Log("Play button clicked! Loading Gameplay Scene...");
         PlayerPrefs.SetInt("LastScore", 0);
         SceneManager.LoadScene("SampleScene");
@@ -33,6 +43,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void QuitGame()
     {
+       
         Debug.Log("Quit Game button clicked!");
         Application.Quit();
 #if UNITY_EDITOR 

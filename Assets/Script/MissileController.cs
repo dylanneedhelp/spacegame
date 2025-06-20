@@ -3,7 +3,11 @@ using UnityEngine;
 public class MissileController : MonoBehaviour
 {
     public float missileSpeed = 25f;
-
+    public AudioManager audioManager;
+    public void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
     // Update is called once per frame
     void Update()
     {
@@ -30,7 +34,7 @@ public class MissileController : MonoBehaviour
           
             if (GameManager.instance != null && GameManager.instance.explosion != null)
             {
-                
+                audioManager.PlaySFX(audioManager.explosionClip);
                 GameObject explosionEffect = Instantiate(GameManager.instance.explosion, otherObject.transform.position, Quaternion.identity);
                 Destroy(explosionEffect, 2f);
             }

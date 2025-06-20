@@ -3,7 +3,7 @@ using UnityEngine;
 public class StarController : MonoBehaviour
 {
     public float rotationSpeed = 0f;
-
+    public AudioManager audioManager;
     [Header("Scaling Effect")]
     public float scaleSpeed = 1f;
     public float scaleRange = 0.2f;
@@ -14,6 +14,11 @@ public class StarController : MonoBehaviour
     {
         initialScale = transform.localScale;
     }
+    public void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+    
 
     // Update is called once per frame
     void Update()
@@ -31,6 +36,7 @@ public class StarController : MonoBehaviour
         {
             if (GameManager.instance != null)
             {
+                audioManager.PlaySFX(audioManager.coinClip);
                 GameManager.instance.AddScore(10);
             }
             else
